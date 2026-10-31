@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>sim-phi × Phira</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c5cff'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3Cpath d='M16 6v20' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/sim-phi.css" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="2.4" />
+          <path d="M16 3.5v25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 class="title">sim-phi <em>×</em> Phira</h1>
+        <p>Phigros 网页模拟器 · Phira 曲谱扩展</p>
+      </div>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button type="button" class="tab active" data-tab="player">模拟器</button>
+      <button type="button" class="tab" data-tab="phira">Phira 曲库</button>
+      <button type="button" class="tab" data-tab="library">我的曲库<span class="tab-badge" id="lib-count">0</span></button>
+    </nav>
+
+    <div class="topbar-right">
+      <span class="pill" id="net-pill"><i class="dot"></i><span id="net-text">在线</span></span>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- ============================ 模拟器 ============================ -->
+    <section class="page active" id="page-player">
+      <div class="playgrid">
+        <div class="stagecol">
+          <div class="panel stagecard">
+            <div class="stage-head">
+              <div class="stage-head-info">
+                <span class="pulse-dot"></span>
+                <div class="stage-head-text">
+                  <div class="stage-title" id="stage-title">未载入曲谱</div>
+                  <div class="stage-sub" id="stage-sub">从 Phira 曲库下载，或载入本地曲谱后开始游玩</div>
+                </div>
+              </div>
+              <div class="stage-head-actions">
+                <span class="chip level-chip" id="stage-level" hidden>—</span>
+                <button type="button" class="btn ghost small" id="btn-goto-library">曲库</button>
+              </div>
+            </div>
+
+            <div class="stage-wrap">
+              <!-- 原版模拟器画布窗口：元素、尺寸与交互全部由模拟器自身控制 -->
+              <div id="stage">
+                <i class="tl" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6.5" y="5" width="4" height="14" rx="1.4" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.4" fill="currentColor"/></svg></i>
+                <i class="tr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M20 4.5V10h-5.5"/></svg></i>
+                <i class="bl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 8h9"/><path d="M17 8h3"/><circle cx="15" cy="8" r="2"/><path d="M4 16h3"/><path d="M11 16h9"/><circle cx="9" cy="16" r="2"/></svg></i>
+                <i class="br" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/><path d="M9 20H4v-5"/></svg></i>
+                <div id="mask">
+                  <div class="mask-card">
+                    <div class="mask-logo">φ</div>
+                    <strong>准备就绪</strong>
+                    <span id="mask-hint">下载或载入一首曲谱，然后点击「播放」</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stage-foot">
+              <div class="hint">
+                <span class="hint-key">双击画面</span>
+                <span>左上 · 暂停</span>
+                <span>右上 · 重开</span>
+                <span>右下 · 全屏</span>
+              </div>
+              <div class="play-actions">
+                <input type="button" id="btn-play" class="btn primary" value="播放" />
+                <input type="button" id="btn-pause" class="btn" value="暂停" />
+              </div>
+            </div>
+          </div>
+          <div class="statusbar" title="点击查看完整日志">
+            <span class="status-dot"></span>
+            <strong id="msg-out">初始化...</strong>
+          </div>
+        </div>
+
+        <aside class="side">
+          <div class="panel track-card">
+            <div class="cover" id="track-cover">
+              <img id="track-cover-img" alt="" hidden />
+              <span class="cover-empty">φ</span>
+            </div>
+            <div class="track-body">
+              <div class="track-name" id="track-name">未载入曲谱</div>
+              <div class="track-artist" id="track-artist">—</div>
+              <dl class="kv">
+                <div><dt>谱师</dt><dd id="track-charter">—</dd></div>
+                <div><dt>等级</dt><dd id="track-level">—</dd></div>
+                <div><dt>来源</dt><dd id="track-source">—</dd></div>
+              </dl>
+              <div class="track-actions">
+                <button type="button" class="btn small" id="btn-open-phira">Phira 曲库</button>
+                <button type="button" class="btn ghost small" id="btn-open-library">我的曲库</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel tools">
+            <div class="panel-title">本地文件</div>
+            <div class="toolrow">
+              <div id="uploader" class="disabled">
+                <input type="button" id="uploader-upload" value="上传" />
+                <div id="uploader-select">
+                  <label id="uploader-file">上传文件</label>
+                  <label id="uploader-dir">上传文件夹</label>
+                </div>
+              </div>
+              <input type="button" id="btn-rmg" value="资源管理" class="btn ghost small" />
+              <input type="button" id="btn-docs" value="使用说明" class="btn ghost small" />
+              <input type="button" id="btn-more" value="更多设置" class="btn ghost small" />
+            </div>
+            <p class="tools-note">支持 .zip / .json / .pec 与音频、图片，全部在本地解析。</p>
+          </div>
+
+          <details class="panel settings" open>
+            <summary>曲谱与设置<span class="summary-hint">点击收起</span></summary>
+            <div id="select" class="disabled">
+              <div class="fieldgroup">
+                <div class="grouptitle">谱面资源</div>
+                <div class="fields">
+                  <label class="field wide"><span>谱面</span><select id="select-chart"></select></label>
+                  <label class="field"><span>音乐</span><select id="select-bgm"></select></label>
+                  <label class="field"><span>图片</span><select id="select-bg"></select></label>
+                </div>
+              </div>
+
+              <div class="fieldgroup">
+                <div class="grouptitle">画面</div>
+                <div class="fields">
+                  <label class="field"><span>宽高比</span><select id="select-aspect-ratio">
+                    <option value="1.25">5:4</option>
+                    <option value="1.333333">4:3</option>
+                    <option value="1.777778" selected>16:9</option>
+                  </select></label>
+                  <label class="field"><span>按键缩放</span><select id="select-note-scale">
+                    <option value="0.8">极小</option>
+                    <option value="0.9">较小</option>
+                    <option value="1" selected>默认</option>
+                    <option value="1.15">较大</option>
+                    <option value="1.3">极大</option>
+                  </select></label>
+                  <label class="field"><span>背景变暗</span><select id="select-background-dim">
+                    <option value="1">黑暗</option>
+                    <option value="0.8">昏暗</option>
+                    <option value="0.6" selected>默认</option>
+                    <option value="0.4">较亮</option>
+                    <option value="0.2">明亮</option>
+                  </select></label>
+                  <label class="field"><span>音效音量</span><select id="select-volume">
+                    <option value="0">0%</option>
+                    <option value="0.5">50%</option>
+                    <option value="1" selected>100%</option>
+                    <option value="2">200%</option>
+                  </select></label>
+                </div>
+              </div>
+
+              <div class="fieldgroup">
+                <div class="grouptitle">曲目信息</div>
+                <div class="fields">
+                  <label class="field"><span>曲名</span><input id="input-name" class="input" placeholder="&lt; Untitled &gt;" /></label>
+                  <label class="field"><span>曲师</span><input id="input-artist" class="input" placeholder="&lt; nameless &gt;" /></label>
+                  <label class="field"><span>曲绘</span><input id="input-illustrator" class="input" placeholder="&lt; nameless &gt;" /></label>
+                  <label class="field"><span>谱师</span><input id="input-charter" class="input" placeholder="&lt; nameless &gt;" /></label>
+                  <label class="field"><span>难度</span><select id="select-difficulty"></select></label>
+                  <label class="field"><span>等级</span><select id="select-level"></select></label>
+                </div>
+              </div>
+
+              <div class="fieldgroup">
+                <div class="grouptitle">游玩</div>
+                <div class="fields checks">
+                  <div class="check"><input type="checkbox" id="feedback" checked /><label for="feedback">触摸反馈</label></div>
+                  <div class="check"><input type="checkbox" id="imageBlur" checked /><label for="imageBlur">背景模糊</label></div>
+                  <div class="check"><input type="checkbox" id="highLight" checked /><label for="highLight">多押高亮</label></div>
+                  <div class="check"><input type="checkbox" id="lineColor" checked /><label for="lineColor">FC/AP 指示器</label></div>
+                  <div class="check disabled-when-playing"><input type="checkbox" id="autoplay" checked /><label for="autoplay">自动演示</label></div>
+                  <div class="check disabled-when-playing"><input type="checkbox" id="showTransition" checked /><label for="showTransition">过渡动画</label></div>
+                </div>
+              </div>
+
+              <div class="fieldgroup">
+                <div class="grouptitle">高级</div>
+                <div class="fields">
+                  <label class="field"><span>谱面镜像</span><select id="select-flip">
+                    <option value="0" selected>无</option>
+                    <option value="1">X 轴</option>
+                    <option value="2">Y 轴</option>
+                    <option value="3">X &amp; Y</option>
+                  </select></label>
+                  <label class="field disabled-when-playing"><span>音乐变速</span><select id="select-speed">
+                    <option value="Slowest">极慢</option>
+                    <option value="Slower">较慢</option>
+                    <option value="" selected>正常</option>
+                    <option value="Faster">较快</option>
+                    <option value="Fastest">极快</option>
+                  </select></label>
+                  <label class="field disabled-when-playing"><span>谱面延时 (ms)</span><input id="input-offset" type="number" step="5" class="input" placeholder="0" /></label>
+                </div>
+              </div>
+
+              <div class="fieldgroup">
+                <div class="grouptitle">性能</div>
+                <div class="fields">
+                  <label class="field"><span>帧率上限</span><select id="perf-fps">
+                    <option value="0">不限</option>
+                    <option value="30">30 FPS</option>
+                    <option value="45">45 FPS</option>
+                    <option value="60" selected>60 FPS</option>
+                  </select></label>
+                  <div class="check"><input type="checkbox" id="perf-mode" /><label for="perf-mode">性能模式</label></div>
+                </div>
+                <p class="perf-note">性能模式会降低渲染分辨率（按屏幕像素比自动适配），高刷平板建议开启；卡顿时还可把帧率上限调到 45。</p>
+              </div>
+            </div>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============================ Phira 曲库 ============================ -->
+    <section class="page" id="page-phira">
+      <div class="pagehead">
+        <div>
+          <h2>Phira 曲库</h2>
+          <p>经由局域网 B 端获取曲谱：浏览、下载到 IndexedDB 并载入模拟器</p>
+        </div>
+        <div class="pagehead-actions">
+          <span class="pill hidden" id="lan-endpoint"></span>
+          <button type="button" class="btn ghost small hidden" id="lan-disconnect">断开</button>
+          <input type="file" id="phira-zip-input" accept=".zip,application/zip" hidden />
+          <button type="button" class="btn ghost" id="phira-import">导入本地 zip</button>
+          <button type="button" class="btn" id="phira-refresh">刷新</button>
+        </div>
+      </div>
+
+      <!-- 连接界面：未连接 B 端时优先展示 -->
+      <div class="panel lan-gate" id="lan-gate">
+        <div class="lan-hero">
+          <div class="lan-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2.5" y="4" width="9" height="7" rx="1.5" />
+              <rect x="12.5" y="13" width="9" height="7" rx="1.5" />
+              <path d="M7 11v4.5a2 2 0 0 0 2 2h3.5" />
+              <path d="M17 13V8.5a2 2 0 0 0-2-2h-3.5" />
+            </svg>
+          </div>
+          <h3>连接 B 端服务器</h3>
+          <p>这台设备（A 端）无法直接访问互联网。请在同一局域网内的 Windows 电脑上运行 PhiraHub 服务器，然后填写它的地址。</p>
+        </div>
+        <div class="lan-form">
+          <label class="field"><span>B 端 IP / 主机名</span><input id="lan-host" placeholder="192.168.1.10" autocomplete="off" inputmode="url" /></label>
+          <label class="field"><span>端口</span><input id="lan-port" type="number" min="1" max="65535" value="8765" inputmode="numeric" /></label>
+          <button type="button" class="btn primary" id="lan-connect">连接</button>
+        </div>
+        <div class="lan-status" id="lan-status">正在检查连接…</div>
+        <details class="lan-help">
+          <summary>怎么找到 B 端的 IP？</summary>
+          <ol>
+            <li>在 B 端（Windows）运行 <code>setup.bat</code>，窗口里会打印本机局域网 IP。</li>
+            <li>也可以在 B 端命令行执行 <code>ipconfig</code>，找「无线局域网适配器 WLAN → IPv4 地址」，通常形如 <code>192.168.x.x</code>。</li>
+            <li>确保平板和电脑连接同一个 Wi-Fi，且 B 端端口已在防火墙放行（setup.bat 会处理）。</li>
+            <li>连接成功后会自动记住地址，下次打开自动重连。</li>
+          </ol>
+        </details>
+      </div>
+
+      <div id="phira-browse">
+        <div class="panel toolbar">
+          <div class="searchbox">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input type="text" id="phira-search" placeholder="搜索曲名 / 曲师 / 谱师" enterkeyhint="search" />
+          </div>
+          <select id="phira-order" class="select">
+            <option value="-updated">最近更新</option>
+            <option value="-rating">评分最高</option>
+            <option value="-name">曲名 Z→A</option>
+            <option value="name">曲名 A→Z</option>
+            <option value="-difficulty">难度最高</option>
+            <option value="difficulty">难度最低</option>
+          </select>
+          <button type="button" class="btn" id="phira-search-btn">搜索</button>
+        </div>
+
+        <div class="listmeta">
+          <span id="phira-total">—</span>
+          <span class="spacer"></span>
+          <span id="phira-status" class="muted"></span>
+        </div>
+
+        <div class="grid" id="phira-grid"></div>
+
+        <div class="pager">
+          <button type="button" class="btn" id="phira-more">加载更多</button>
+          <span id="phira-pageinfo">—</span>
+        </div>
+
+        <details class="panel advanced">
+          <summary>关于局域网模式</summary>
+          <p>
+            A 端所有 Phira 请求（列表 / 详情 / 封面 / 曲谱包）都会转发到 B 端，由 B 端访问互联网。
+            因此 B 端必须保持运行；断开后仍可从「我的曲库」载入已下载的曲谱离线游玩。
+          </p>
+        </details>
+      </div>
+
+      <div id="phira-detail" class="hidden"></div>
+    </section>
+
+    <!-- ============================ 我的曲库 ============================ -->
+    <section class="page" id="page-library">
+      <div class="pagehead">
+        <div>
+          <h2>我的曲库</h2>
+          <p>已保存在本机 IndexedDB 的曲谱，断网也能载入游玩</p>
+        </div>
+        <div class="pagehead-actions">
+          <button type="button" class="btn ghost" id="library-open-phira">前往 Phira 曲库</button>
+          <button type="button" class="btn ghost danger" id="library-clear">清空</button>
+        </div>
+      </div>
+      <div class="listmeta">
+        <span id="library-total">—</span>
+        <span class="spacer"></span>
+        <span class="muted" id="library-quota"></span>
+      </div>
+      <div class="grid library-grid" id="library-grid"></div>
+      <div class="empty hidden" id="library-empty">
+        <div class="empty-icon">φ</div>
+        <strong>曲库还是空的</strong>
+        <span>去「Phira 曲库」下载，或导入本地 zip</span>
+        <button type="button" class="btn" id="library-empty-btn">去 Phira 曲库</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Based on sim-phi by lchzh3473. Adapted by someone on 26.10.31</span>
+    <span class="footer-right">仅用于个人学习与离线游玩</span>
+  </footer>
+</div>
+
+<!-- 模拟器浮层（资源管理 / 更多设置 / 日志 / 弹窗宿主） -->
+<div class="main" id="modal-host">
+  <div id="cover-dark" class="cover-dark fade"></div>
+  <div id="cover-view" class="cover-view fade">
+    <div id="view-nav" class="view-nav">
+      <a id="nav-cfg">更多设置</a>
+      <a id="nav-msg">日志</a>
+    </div>
+    <div class="view-content">
+      <div id="view-cfg"></div>
+      <div id="view-msg"></div>
+    </div>
+  </div>
+  <div id="cover-rmg" class="cover-view fade">
+    <div id="view-nav2" class="view-nav">
+      <a id="nav-rmg">资源管理</a>
+      <a id="nav-ext">扩展</a>
+    </div>
+    <div class="view-content">
+      <div id="view-rmg"></div>
+      <div id="view-ext"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<div class="app-modal" id="app-modal" hidden>
+  <div class="app-modal-card">
+    <h3 id="app-modal-title">提示</h3>
+    <div id="app-modal-body"></div>
+    <div class="app-modal-actions">
+      <button type="button" class="btn ghost" id="app-modal-cancel">取消</button>
+      <button type="button" class="btn primary" id="app-modal-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/vendor/sim-phi.bundle.js"></script>
+<script src="js/app/config.js"></script>
+<script src="js/app/util.js"></script>
+<script src="js/app/idb.js"></script>
+<script src="js/app/zip.js"></script>
+<script src="js/app/phira.js"></script>
+<script src="js/app/lan.js"></script>
+<script src="js/app/loader.js"></script>
+<script src="js/app/perf.js"></script>
+<script src="js/app/player-ui.js"></script>
+<script src="js/app/phira-ui.js"></script>
+<script src="js/app/library-ui.js"></script>
+<script src="js/app/app.js"></script>
+</body>
+</html>

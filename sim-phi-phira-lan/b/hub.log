@@ -1,0 +1,13 @@
+2026-11-01 02:28:35  ============================================================
+2026-11-01 02:28:35  PhiraHub 1.0.0 已启动，监听 0.0.0.0:8765
+2026-11-01 02:28:36    A 端可填写: 192.168.0.103:8765   (http://192.168.0.103:8765/)
+2026-11-01 02:28:36    本机自检: http://127.0.0.1:8765/api/health
+2026-11-01 02:28:36  ============================================================
+2026-11-01 02:28:53  GET /api/chart?page=1&pageNum=12&order=-updated -> 200 https://phira.5wyxi.com/chart?page=1&pageNum=12&order=-updated (12553 bytes)
+2026-11-01 02:29:00  GET /api/chart?page=1&pageNum=12&order=-rating -> 200 https://phira.5wyxi.com/chart?page=1&pageNum=12&order=-rating (12912 bytes)
+2026-11-01 02:29:06  GET /api/chart/78805 -> 200 https://phira.5wyxi.com/chart/78805 (1393 bytes)
+2026-11-01 02:29:12  FILE 200 https://phira.5wyxi.com/files/d54600ce-78f7-4b15-b3b7-4a49e61b19fc via https://phira.5wyxi.com/files/d54600ce-78f7-4b15-b3b7-4a49e61b19fc (14135860 bytes)
+2026-11-01 02:30:42  API CACHE https://phira.5wyxi.com/chart?page=1&pageNum=12&order=-updated (12553 bytes)
+2026-11-01 02:30:53  API CACHE https://phira.5wyxi.com/chart?page=1&pageNum=12&order=-rating (12912 bytes)
+2026-11-01 02:30:57  GET /api/chart/39461 -> 200 https://phira.5wyxi.com/chart/39461 (892 bytes)
+2026-11-01 02:31:01  FILE 200 https://phira.5wyxi.com/files/1a971e19-8446-49aa-b2a1-cc5c8cf9d86f via https://phira.5wyxi.com/files/1a971e19-8446-49aa-b2a1-cc5c8cf9d86f (26243028 bytes)

@@ -1,0 +1,22 @@
+{
+  "host": "0.0.0.0",
+  "port": 8765,
+  "upstream_api": "https://phira.5wyxi.com",
+  "upstream_api_fallback": "https://api.phira.cn",
+  "upstream_file": "https://phira.5wyxi.com",
+  "log": "hub.log",
+  "allowed_hosts": [
+    "api.phira.cn",
+    "phira.5wyxi.com",
+    "phira-cdn.5wyxi.com",
+    "phira.moe",
+    "www.phira.moe"
+  ],
+  "api_timeout": 12,
+  "file_timeout": 60,
+  "force_ipv4": true,
+  "upstream_retries": 1,
+  "api_cache_seconds": 120,
+  "cache_stale_seconds": 86400,
+  "file_host_fallback": true
+}
